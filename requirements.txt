@@ -1,0 +1,4 @@
+decorator==4.2.1
+networkx==2.1
+python-louvain==0.10
+simple-settings==0.13.0
