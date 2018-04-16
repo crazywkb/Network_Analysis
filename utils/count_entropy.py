@@ -94,10 +94,4 @@ def count_volume(graph, module):
 
 
 if __name__ == '__main__':
-    from algorithm.community.community_detection import louvain, fast_newman
-    import networkx as nx
-
-    test_graph = nx.karate_club_graph()
-    result_dict = fast_newman(test_graph, 4)
-    (count_one_dimension(test_graph))
-    (count_two_dimension(test_graph, result_dict))
+    pass
