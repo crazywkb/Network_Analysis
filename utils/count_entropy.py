@@ -4,6 +4,7 @@ from math import log
 def count_one_dimension(graph, printed=True):
     """
     count graph's entropy of one dimension
+    :param printed: boolean, print the result or not
     :param graph: networkx.classes.graph.Graph
     :return: structure entropy of one dimension
     """
@@ -27,7 +28,7 @@ def count_two_dimension(graph, modules_dict, printed=True):
     count two-dimensional structure entropy
     :param printed: boolean, print the result or not
     :param graph: networkx.classes.graph.Graph
-    :param modules_dict: dict of parts, (key, value): (module_num, modules_list)
+    :param modules_dict: dict of parts, (key, value): (module_num, modules_set)
     :return: structure entropy of two dimension
     """
     total_degree = len(graph.edges)
@@ -70,11 +71,11 @@ def count_two_dimension(graph, modules_dict, printed=True):
     return entropy
 
 
-def count_multiple_dimension(graph, parts_list, printed=True):
+def count_multiple_dimension(graph, modules_dict, printed=True):
     """
     There may be a problem.
     :param graph:
-    :param parts_list:
+    :param modules_dict:
     :return:
     """
     # TODO: count multiple dimension structure entropy.
@@ -93,10 +94,10 @@ def count_volume(graph, module):
 
 
 if __name__ == '__main__':
-    from algorithm.community.community_detection import louvain
+    from algorithm.community.community_detection import louvain, fast_newman
     import networkx as nx
 
     test_graph = nx.karate_club_graph()
-    result_dict = louvain(test_graph)
+    result_dict = fast_newman(test_graph, 4)
     (count_one_dimension(test_graph))
     (count_two_dimension(test_graph, result_dict))
