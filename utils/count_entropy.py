@@ -16,8 +16,9 @@ def count_one_dimension(graph, printed=True):
         entropy -= temp * log(temp, 2)
 
     if printed:
-        print("=========================================================================================================")
-        print("The one-dimensional structure entropy of graph %s: %f"%(graph, entropy))
+        print(
+            "=========================================================================================================")
+        print("The one-dimensional structure entropy of graph %s: %f" % (graph, entropy))
         print()
 
     return entropy
@@ -61,11 +62,12 @@ def count_two_dimension(graph, modules_dict, printed=True):
 
     entropy = first_part + second_part
     if printed:
-        print("=========================================================================================================")
-        print("The two-dimensional structure entropy of graph %s: %f"%(graph, entropy))
+        print(
+            "=========================================================================================================")
+        print("The two-dimensional structure entropy of graph %s: %f" % (graph, entropy))
         print("The modules' dict: ")
         for module_num, module in modules_dict.items():
-            print("%-4s"%module_num, module)
+            print("%-4s" % module_num, module)
         print()
 
     return entropy
@@ -83,6 +85,30 @@ def count_multiple_dimension(graph, modules_dict, printed=True):
     return 0
 
 
+def count_normalize(graph, modules_dict, printed=True):
+    """
+    count the normalized structure entropy of graph
+    :param graph: networkx.classes.graph.Graph
+    :param modules_dict: dict of parts, (key, value): (module_num, modules_set)
+    :param printed: print the resule or not
+    :return: the entropy
+    """
+    one_dimension_structure_entropy = count_one_dimension(graph, False)
+    two_dimension_structure_entropy = count_two_dimension(graph, modules_dict, False)
+
+    entropy = two_dimension_structure_entropy / one_dimension_structure_entropy
+    if printed:
+        print(
+            "=========================================================================================================")
+        print("The normalized structure entropy of graph %s: %f" % (graph, entropy))
+        print("The modules' dict: ")
+        for module_num, module in modules_dict.items():
+            print("%-4s" % module_num, module)
+        print()
+
+    return two_dimension_structure_entropy / one_dimension_structure_entropy
+
+
 def count_volume(graph, module):
     """
     count the volume of module in the graph
@@ -93,5 +119,53 @@ def count_volume(graph, module):
     return sum([graph.degree[node] for node in module])
 
 
+def count_resistance(graph, modules_dict, strict=False, printed=False):
+    """
+    count the resistance of graph with module partitions
+    warning: strict computing will take a extremely long time
+    :param printed: print the result or not
+    :param graph: networkx.classes.graph.Graph
+    :param modules_dict: dict of parts, (key, value): (module_num, modules_set)
+    :param strict: strict computing or fuzzy computing
+    :return: the resistance of graph
+    """
+    if strict:
+        resistance = _count_resistance_strict(graph, modules_dict, printed)
+    else:
+        resistance = _count_resistance_fuzzy(graph, modules_dict, printed)
+
+    return resistance
+
+
+def _count_resistance_fuzzy(graph, modules_dict, printed=True):
+    one_dimension_structure_entropy = count_one_dimension(graph, False)
+    two_dimension_structure_entropy = count_two_dimension(graph, modules_dict, False)
+    resistance = one_dimension_structure_entropy - two_dimension_structure_entropy
+
+    if printed:
+        print(
+            "=========================================================================================================")
+        print("The fuzzy resistance of graph %s: %f" % (graph, resistance))
+        print("The modules' dict: ")
+        for module_num, module in modules_dict.items():
+            print("%-4s" % module_num, module)
+        print()
+
+    return resistance
+
+
+def _count_resistance_strict(graph, modules_dict, printed=True):
+    # Todo: resistance of strict computing
+    resistance = 0
+    return resistance
+
+
 if __name__ == '__main__':
     pass
+
+    # test_graph = nx.karate_club_graph()
+    # modules_dict = louvain(test_graph)
+    #
+    # count_normalize(test_graph, modules_dict)
+    # count_one_dimension(test_graph)
+    # count_two_dimension(test_graph, modules_dict)
