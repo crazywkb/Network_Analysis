@@ -8,7 +8,7 @@ def count_one_dimension(graph, printed=True):
     :param graph: networkx.classes.graph.Graph
     :return: structure entropy of one dimension
     """
-    total_degree = 2 * len(graph.edges)
+    total_degree = 2 * graph.number_of_edges()
     entropy = 0
 
     for node, node_degree in graph.degree:
@@ -16,8 +16,7 @@ def count_one_dimension(graph, printed=True):
         entropy -= temp * log(temp, 2)
 
     if printed:
-        print(
-            "=========================================================================================================")
+        print("======================================================================================================")
         print("The one-dimensional structure entropy of graph %s: %f" % (graph, entropy))
         print()
 
@@ -32,7 +31,7 @@ def count_two_dimension(graph, modules_dict, printed=True):
     :param modules_dict: dict of parts, (key, value): (module_num, modules_set)
     :return: structure entropy of two dimension
     """
-    total_degree = len(graph.edges)
+    total_degree = graph.number_of_edges()
     assert total_degree != 0
 
     # first part: count information of nodes in its own module
@@ -62,8 +61,7 @@ def count_two_dimension(graph, modules_dict, printed=True):
 
     entropy = first_part + second_part
     if printed:
-        print(
-            "=========================================================================================================")
+        print("======================================================================================================")
         print("The two-dimensional structure entropy of graph %s: %f" % (graph, entropy))
         print("The modules' dict: ")
         for module_num, module in modules_dict.items():
@@ -98,8 +96,7 @@ def count_normalize(graph, modules_dict, printed=True):
 
     entropy = two_dimension_structure_entropy / one_dimension_structure_entropy
     if printed:
-        print(
-            "=========================================================================================================")
+        print("======================================================================================================")
         print("The normalized structure entropy of graph %s: %f" % (graph, entropy))
         print("The modules' dict: ")
         for module_num, module in modules_dict.items():
@@ -143,8 +140,7 @@ def _count_resistance_fuzzy(graph, modules_dict, printed=True):
     resistance = one_dimension_structure_entropy - two_dimension_structure_entropy
 
     if printed:
-        print(
-            "=========================================================================================================")
+        print("======================================================================================================")
         print("The fuzzy resistance of graph %s: %f" % (graph, resistance))
         print("The modules' dict: ")
         for module_num, module in modules_dict.items():
