@@ -12,22 +12,35 @@ class Greedy(object):
         self.available_edges = None
 
     def get_available_edges(self, modules):
+        """
+        get available edges which can be used in anonymize() function
+        :param modules: dict, modules of graph
+        :return: None
+        """
         inside_edges = set()
         for module in modules.values():
-            sub_graph = self.graph.subgraph(module)
+            sub_graph = nx.complete_graph(module)
             inside_edges.update(sub_graph.edges)
 
-        outside_edges = nx.complete_graph(self.graph.nodes)
+        module_cross_edges = nx.complete_graph(self.graph.nodes).edges - inside_edges
+        self.available_edges = module_cross_edges - self.graph.edges
+        print("You get %d edges available."%(len(self.available_edges)))
 
-        self.available_edges = outside_edges - self.graph.edges - inside_edges
-        print(len(self.available_edges), len(outside_edges), len(inside_edges))
+    def anonymize(self, sum_of_edge=None, added_edges=None, interval=1):
+        assert isinstance(sum_of_edge, int) or isinstance(added_edges, list)
+        modules = self.func(self.graph, **self.func_args)
+        self.get_available_edges(modules)
+        # Todo: remain to finish.
 
 
 if __name__ == '__main__':
-    greedy = Greedy(read_gml("../../samples/dolphins.gml"))
-    temp_modules = louvain(nx.karate_club_graph())
+    temp_graph = read_gml("../../samples/dolphins.gml")
+    greedy = Greedy(temp_graph)
+    temp_modules = louvain(temp_graph)
+
     start_time = time.time()
     for i in range(200):
         greedy.get_available_edges(temp_modules)
     end_time = time.time()
+
     print("Total cost: " + str(end_time - start_time))
