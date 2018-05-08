@@ -40,7 +40,7 @@ def count_two_dimension(graph, modules_dict, printed=True):
     second_part = 0
 
     for module in modules_dict.values():
-        module_capacity = len(module)
+        module_capacity = count_volume(graph, module)
         module_entropy = 0
         sub_module_graph = graph.subgraph(module)
         module_degree = 0  # the sum of nodes' degree in module

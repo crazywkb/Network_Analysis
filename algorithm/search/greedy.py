@@ -71,6 +71,10 @@ class Greedy(object):
 
 if __name__ == '__main__':
     import networkx as nx
-    test_graph = nx.karate_club_graph()
-    greedy = Greedy(test_graph, louvain)
-    greedy.anonymize(100, intervals=1)
+    from utils.graph_IO import read_gml
+
+    graph = read_gml("../../samples/dolphins.gml")
+    nx.draw_networkx(graph)
+    # test_graph = nx.karate_club_graph()
+    # greedy = Greedy(test_graph, louvain)
+    # greedy.anonymize(100, intervals=1)
