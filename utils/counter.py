@@ -1,32 +1,11 @@
 from math import log
 
-printed = False
+from utils.decoration import watcher
+
+switch = True
 
 
-def deco_print(is_print):
-    """
-    decoration of function
-    :param is_print: print the result of func or not
-    :return: func()
-    """
-
-    def deco(func):
-        def __deco(*args, **kwargs):
-            result = func(*args, **kwargs)
-
-            if is_print:
-                print("==========================================================================")
-                print("Function %s output: %f." % (func.__name__, result))
-                print()
-
-            return result
-
-        return __deco
-
-    return deco
-
-
-@deco_print(printed)
+@watcher(switch)
 def count_position_entropy(graph):
     """
     count position entropy of graph
@@ -43,7 +22,7 @@ def count_position_entropy(graph):
     return position_entropy
 
 
-@deco_print(printed)
+@watcher(switch)
 def count_structure_entropy(graph, modules):
     """
     count structure entropy of graph with modules.
@@ -83,7 +62,7 @@ def count_structure_entropy(graph, modules):
     return structure_entropy
 
 
-@deco_print(printed)
+@watcher(switch)
 def count_multiple_dimension(graph, modules_dict):
     """
     There may be a problem.
@@ -94,7 +73,7 @@ def count_multiple_dimension(graph, modules_dict):
     pass
 
 
-@deco_print(printed)
+@watcher(switch)
 def count_normalize_structure_entropy(graph, modules):
     structure_entropy = count_structure_entropy(graph, modules)
     position_entropy = count_position_entropy(graph)
@@ -105,7 +84,7 @@ def count_normalize_structure_entropy(graph, modules):
     return normalized_structure_entropy
 
 
-@deco_print(printed)
+@watcher(switch)
 def count_resistance(graph, modules):
     """
     count the resistance with modules
@@ -145,7 +124,6 @@ def count_volume(graph, module):
 if __name__ == '__main__':
     pass
     # import networkx as nx
-    # from algorithm.community.community_detection import louvain, fast_newman
     # temp_graph = nx.karate_club_graph()
     # temp_modules = {0: {0, 2, 3, 7, 11, 12, 13}, 1: {1, 17, 19, 21}, 2: {4, 5, 6, 10, 16},
     #                 3: {8, 14, 15, 18, 20, 22, 30, 32},

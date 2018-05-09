@@ -75,7 +75,7 @@ if __name__ == '__main__':
     temp_modules = louvain(temp_graph)
 
     start_time = time.time()
-    greedy.anonymize(40, interval=40)
+    greedy.anonymize(40, interval=1)
     end_time = time.time()
 
     print("Total cost: " + str(end_time - start_time))
