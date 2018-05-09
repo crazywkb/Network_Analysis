@@ -1,80 +1,81 @@
 import networkx as nx
-from algorithm.community.community_detection import louvain
-from utils.count_entropy import count_resistance
-from simple_settings import settings
+from algorithm.community.detection import louvain
+from utils.counter import count_resistance
+from utils.graph_IO import read_gml
+import sys
+import time
 
 
 class Greedy(object):
     def __init__(self, graph, func=louvain, func_args=dict()):
-        self.graph = graph.copy()
-        self.community_detection_func = func
-        self.community_detection_func_args = func_args
-        self.diff_edges = list()
-        self.max_resistance = 0
+        self.graph = graph
+        self.func = func
+        self.func_args = func_args
+        self.available_edges = None
 
-    def __get_diff_edges(self, modules):
-        full_edges = {(i, j) for i in range(self.graph.number_of_nodes()) for j in
-                      range(i + 1, self.graph.number_of_nodes())}
-        diff_edges = full_edges - self.graph.edges
-        self.diff_edges = list()
-        for edge in diff_edges:
-            src, des = edge
-            flag = False
-            for module in modules.values():
-                if src in module and des in module:
-                    flag = True
-                    break
-            if not flag:
-                self.diff_edges.append(edge)
+    def get_available_edges(self, modules):
+        """
+        get available edges which can be used in anonymize() function
+        :param modules: dict, modules of graph
+        :return: None
+        """
+        inside_edges = set()
+        for module in modules.values():
+            sub_graph = nx.complete_graph(module)
+            inside_edges.update(sub_graph.edges)
 
+        module_cross_edges = nx.complete_graph(self.graph.nodes).edges - inside_edges
+        self.available_edges = module_cross_edges - self.graph.edges
+        print("You get %d edges available." % (len(self.available_edges)))
 
-    def anonymize(self, edges_sum=None, added_edges=None, intervals=1):
-        assert isinstance(edges_sum, int) or isinstance(added_edges, list)
-        modules = self.community_detection_func(self.graph, **self.community_detection_func_args)
-        self.__get_diff_edges(modules)
-        max_resistance = count_resistance(self.graph, modules)
-        print("Bebore anonymize: the resistance of graph is: %f" % max_resistance)
+    def anonymize(self, sum_of_edge=None, added_edges=None, interval=1):
+        assert isinstance(sum_of_edge, int) or isinstance(added_edges, list)
+        modules = self.func(self.graph, **self.func_args)
+        self.get_available_edges(modules)
+        resistance = count_resistance(self.graph, modules)
+        print("Before anonymizing, the resistance of graph: %f" % resistance)
 
-        if not edges_sum:
+        if not sum_of_edge:
             self.graph.add_edges(added_edges)
         else:
-            count = 0
 
-            while edges_sum:
+            while sum_of_edge:  # adding sum_of_edge edges to make the graph anonymized
                 add_edge = None
-                max_resistance = 1000
+                min_resistance = sys.maxsize
 
-                for edge in self.diff_edges:
+                for edge in self.available_edges:
                     self.graph.add_edge(*edge)
-                    temp_resistance = count_resistance(self.graph, modules)
-                    if temp_resistance < max_resistance:
-                        max_resistance = temp_resistance
+                    resistance = count_resistance(self.graph, modules)
+
+                    if resistance < min_resistance:
+                        min_resistance = resistance
                         add_edge = edge
+
                     self.graph.remove_edge(*edge)
 
-                self.diff_edges.remove(add_edge)
-                edges_sum -= 1
+                self.available_edges.remove(add_edge)
                 self.graph.add_edge(*add_edge)
-                count += 1
 
-                if count == intervals:
-                    modules = self.community_detection_func(self.graph, **self.community_detection_func_args)
-                    max_resistance = count_resistance(self.graph, modules)
-                    self.__get_diff_edges(modules)
-                    print("Adding %d edge per time, resistance: %f"%(intervals, max_resistance))
-                    count = 0
+                if not sum_of_edge % interval:
+                    modules = self.func(self.graph, **self.func_args)
+                    min_resistance = count_resistance(self.graph, modules)
+                    # self.get_available_edges(modules)
+                    print("Adding %d edge per time, the resistance: %f" % (interval, min_resistance))
 
-        modules = self.community_detection_func(self.graph, **self.community_detection_func_args)
-        max_resistance = count_resistance(self.graph, modules)
-        print("After anonymize: the resistance of graph is: %f"%max_resistance)
+                sum_of_edge -= 1
+
+        modules = self.func(self.graph, **self.func_args)
+        min_resistance = count_resistance(self.graph, modules)
+        print("After anonymization, the resistance of graph is: %f" % min_resistance)
 
 
 if __name__ == '__main__':
-    import networkx as nx
-    from utils.graph_IO import read_gml
+    temp_graph = read_gml("../../samples/dolphins.gml")
+    greedy = Greedy(temp_graph)
+    temp_modules = louvain(temp_graph)
 
-    graph = read_gml("../../samples/dolphins.gml")
-    nx.draw_networkx(graph)
-    # test_graph = nx.karate_club_graph()
-    # greedy = Greedy(test_graph, louvain)
-    # greedy.anonymize(100, intervals=1)
+    start_time = time.time()
+    greedy.anonymize(40, interval=40)
+    end_time = time.time()
+
+    print("Total cost: " + str(end_time - start_time))
