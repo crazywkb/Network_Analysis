@@ -1,6 +1,6 @@
 from math import log
 
-printed = True
+printed = False
 
 
 def deco_print(is_print):
@@ -87,8 +87,8 @@ def count_structure_entropy(graph, modules):
 def count_multiple_dimension(graph, modules_dict):
     """
     There may be a problem.
-    :param graph:
-    :param modules_dict:
+    :param graph: networkx.classes.graph.Graph
+    :param modules_dict: dict, dict of moudles
     :return:
     """
     pass
@@ -98,23 +98,23 @@ def count_multiple_dimension(graph, modules_dict):
 def count_normalize_structure_entropy(graph, modules):
     structure_entropy = count_structure_entropy(graph, modules)
     position_entropy = count_position_entropy(graph)
-    resistence = position_entropy - structure_entropy
+    resistance = position_entropy - structure_entropy
 
-    security_index = resistence / position_entropy
+    security_index = resistance / position_entropy
     normalized_structure_entropy = 1 - security_index
     return normalized_structure_entropy
 
 
 @deco_print(printed)
-def count_resistence(graph, modules):
+def count_resistance(graph, modules):
     """
-    count the resistence with modules
+    count the resistance with modules
     :param graph: networkx.classes.graph.Graph
     :param modules: dict, dict of module
-    :return: float, resistence of graph with modules
+    :return: float, resistance of graph with modules
     """
     total_degree = 2 * graph.number_of_edges()
-    resistence = 0
+    resistance = 0
 
     for module in modules.values():
         module_volume = count_volume(graph, module)
@@ -127,9 +127,9 @@ def count_resistence(graph, modules):
             module_graph_degree += module_graph.degree[node]
 
         cross_edges_sum = module_total_degree - module_graph_degree
-        resistence -= (module_volume - cross_edges_sum) / total_degree * log(module_volume / total_degree, 2)
+        resistance -= (module_volume - cross_edges_sum) / total_degree * log(module_volume / total_degree, 2)
 
-    return resistence
+    return resistance
 
 
 def count_volume(graph, module):
@@ -153,4 +153,4 @@ if __name__ == '__main__':
     # temp_modules = {0:set(temp_graph.nodes)}
     # h1 = count_position_entropy(temp_graph)
     # h2 = count_structure_entropy(temp_graph, temp_modules)
-    # resistence = count_resistence(temp_graph, temp_modules)
+    # resistance = count_resistance(temp_graph, temp_modules)

@@ -10,7 +10,7 @@ class Greedy(object):
         self.community_detection_func = func
         self.community_detection_func_args = func_args
         self.diff_edges = list()
-        self.max_resistence = 0
+        self.max_resistance = 0
 
     def __get_diff_edges(self, modules):
         full_edges = {(i, j) for i in range(self.graph.number_of_nodes()) for j in
@@ -32,8 +32,8 @@ class Greedy(object):
         assert isinstance(edges_sum, int) or isinstance(added_edges, list)
         modules = self.community_detection_func(self.graph, **self.community_detection_func_args)
         self.__get_diff_edges(modules)
-        max_resistence = count_resistance(self.graph, modules)
-        print("Bebore anonymize: the resistence of graph is: %f" % max_resistence)
+        max_resistance = count_resistance(self.graph, modules)
+        print("Bebore anonymize: the resistance of graph is: %f" % max_resistance)
 
         if not edges_sum:
             self.graph.add_edges(added_edges)
@@ -42,13 +42,13 @@ class Greedy(object):
 
             while edges_sum:
                 add_edge = None
-                max_resistence = 1000
+                max_resistance = 1000
 
                 for edge in self.diff_edges:
                     self.graph.add_edge(*edge)
-                    temp_resistence = count_resistance(self.graph, modules)
-                    if temp_resistence < max_resistence:
-                        max_resistence = temp_resistence
+                    temp_resistance = count_resistance(self.graph, modules)
+                    if temp_resistance < max_resistance:
+                        max_resistance = temp_resistance
                         add_edge = edge
                     self.graph.remove_edge(*edge)
 
@@ -59,14 +59,14 @@ class Greedy(object):
 
                 if count == intervals:
                     modules = self.community_detection_func(self.graph, **self.community_detection_func_args)
-                    max_resistence = count_resistance(self.graph, modules)
+                    max_resistance = count_resistance(self.graph, modules)
                     self.__get_diff_edges(modules)
-                    print("Adding %d edge per time, resistence: %f"%(intervals, max_resistence))
+                    print("Adding %d edge per time, resistance: %f"%(intervals, max_resistance))
                     count = 0
 
         modules = self.community_detection_func(self.graph, **self.community_detection_func_args)
-        max_resistence = count_resistance(self.graph, modules)
-        print("After anonymize: the resistence of graph is: %f"%max_resistence)
+        max_resistance = count_resistance(self.graph, modules)
+        print("After anonymize: the resistance of graph is: %f"%max_resistance)
 
 
 if __name__ == '__main__':

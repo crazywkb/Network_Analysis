@@ -12,3 +12,4 @@ ALGORITHM_LIST = ["louvain", "fast_newman"]
 
 GRAPH_PATH = "samples/karate.gml"
 
+PRINTED = False

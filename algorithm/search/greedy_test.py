@@ -1,6 +1,6 @@
 import networkx as nx
 from algorithm.community.community_detection import louvain
-from utils.count_entropy import count_resistance
+from utils.counter import count_resistance
 from utils.graph_IO import read_gml
 import sys
 import time
@@ -32,8 +32,8 @@ class Greedy(object):
         assert isinstance(sum_of_edge, int) or isinstance(added_edges, list)
         modules = self.func(self.graph, **self.func_args)
         self.get_available_edges(modules)
-        resistence = count_resistance(self.graph, modules)
-        print("Before anonymizing, the resistence of graph: %f" % resistence)
+        resistance = count_resistance(self.graph, modules)
+        print("Before anonymizing, the resistance of graph: %f" % resistance)
 
         if not sum_of_edge:
             self.graph.add_edges(added_edges)
@@ -41,14 +41,14 @@ class Greedy(object):
 
             while sum_of_edge:  # adding sum_of_edge edges to make the graph anonymized
                 add_edge = None
-                min_resistence = sys.maxsize
+                min_resistance = sys.maxsize
 
                 for edge in self.available_edges:
                     self.graph.add_edge(*edge)
-                    resistence = count_resistance(self.graph, modules)
+                    resistance = count_resistance(self.graph, modules)
 
-                    if resistence < min_resistence:
-                        min_resistence = resistence
+                    if resistance < min_resistance:
+                        min_resistance = resistance
                         add_edge = edge
 
                     self.graph.remove_edge(*edge)
@@ -58,15 +58,15 @@ class Greedy(object):
 
                 if not sum_of_edge % interval:
                     modules = self.func(self.graph, **self.func_args)
-                    min_resistence = count_resistance(self.graph, modules)
+                    min_resistance = count_resistance(self.graph, modules)
                     # self.get_available_edges(modules)
-                    print("Adding %d edge per time, the resistence: %f"%(interval, min_resistence))
+                    print("Adding %d edge per time, the resistance: %f"%(interval, min_resistance))
 
                 sum_of_edge -= 1
 
         modules = self.func(self.graph, **self.func_args)
-        min_resistence = count_resistance(self.graph, modules)
-        print("After anonymization, the resistence of graph is: %f"%min_resistence)
+        min_resistance = count_resistance(self.graph, modules)
+        print("After anonymization, the resistance of graph is: %f"%min_resistance)
 
 
 if __name__ == '__main__':
