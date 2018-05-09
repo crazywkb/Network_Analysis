@@ -91,14 +91,18 @@ def count_multiple_dimension(graph, modules_dict):
     :param modules_dict:
     :return:
     """
-    # TODO: count multiple dimension structure entropy.
     pass
-    return 0
 
 
 @deco_print(printed)
-def count_normalize_entropy(graph, modules):
-    pass
+def count_normalize_structure_entropy(graph, modules):
+    structure_entropy = count_structure_entropy(graph, modules)
+    position_entropy = count_position_entropy(graph)
+    resistence = position_entropy - structure_entropy
+
+    security_index = resistence / position_entropy
+    normalized_structure_entropy = 1 - security_index
+    return normalized_structure_entropy
 
 
 @deco_print(printed)
@@ -141,11 +145,12 @@ def count_volume(graph, module):
 if __name__ == '__main__':
     pass
     # import networkx as nx
+    # from algorithm.community.community_detection import louvain, fast_newman
     # temp_graph = nx.karate_club_graph()
     # temp_modules = {0: {0, 2, 3, 7, 11, 12, 13}, 1: {1, 17, 19, 21}, 2: {4, 5, 6, 10, 16},
     #                 3: {8, 14, 15, 18, 20, 22, 30, 32},
     #                 4: {9, 23, 26, 27, 29, 33}, 5: {24, 25, 28, 31}}
+    # temp_modules = {0:set(temp_graph.nodes)}
     # h1 = count_position_entropy(temp_graph)
     # h2 = count_structure_entropy(temp_graph, temp_modules)
     # resistence = count_resistence(temp_graph, temp_modules)
-    # print(h1 - h2)
