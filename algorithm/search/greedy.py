@@ -1,9 +1,12 @@
+import sys
+
 import networkx as nx
+
 from algorithm.community.detection import louvain
 from utils.counter import count_resistance
+from utils.decoration import timer
 from utils.graph_IO import read_gml
-import sys
-import time
+from utils.counter import count_position_entropy
 
 
 class Greedy(object):
@@ -13,6 +16,7 @@ class Greedy(object):
         self.func_args = func_args
         self.available_edges = None
 
+    @timer(switch=True)
     def get_available_edges(self, modules):
         """
         get available edges which can be used in anonymize() function
@@ -28,6 +32,7 @@ class Greedy(object):
         self.available_edges = module_cross_edges - self.graph.edges
         print("You get %d edges available." % (len(self.available_edges)))
 
+    @timer(switch=True)
     def anonymize(self, sum_of_edge=None, added_edges=None, interval=1):
         assert isinstance(sum_of_edge, int) or isinstance(added_edges, list)
         modules = self.func(self.graph, **self.func_args)
@@ -56,11 +61,7 @@ class Greedy(object):
                 self.available_edges.remove(add_edge)
                 self.graph.add_edge(*add_edge)
 
-                if not sum_of_edge % interval:
-                    modules = self.func(self.graph, **self.func_args)
-                    min_resistance = count_resistance(self.graph, modules)
-                    # self.get_available_edges(modules)
-                    print("Adding %d edge per time, the resistance: %f" % (interval, min_resistance))
+                print(min_resistance)
 
                 sum_of_edge -= 1
 
@@ -70,12 +71,9 @@ class Greedy(object):
 
 
 if __name__ == '__main__':
+    from algorithm.community.detection import louvain, fast_newman
     temp_graph = read_gml("../../samples/dolphins.gml")
     greedy = Greedy(temp_graph)
-    temp_modules = louvain(temp_graph)
+    temp_modules = fast_newman(temp_graph, 11)
 
-    start_time = time.time()
     greedy.anonymize(40, interval=1)
-    end_time = time.time()
-
-    print("Total cost: " + str(end_time - start_time))
