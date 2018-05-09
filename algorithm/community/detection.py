@@ -33,16 +33,21 @@ def fast_newman(graph, part_sum):
     :param part_sum: int
     :return: dict, same with louvain()
     """
-    partitions_iter = girvan_newman(graph)
-    result = next(partitions_iter)
-    for result in range(part_sum - 2):
+    assert part_sum >= 1
+
+    if part_sum == 1:
+        partition_dict = {0: set(graph.nodes)}
+    else:
+        partitions_iter = girvan_newman(graph)
         result = next(partitions_iter)
+        for result in range(part_sum - 2):
+            result = next(partitions_iter)
 
-    partition_dict = defaultdict(set)
-    partition_dict.fromkeys(range(part_sum))
+        partition_dict = defaultdict(set)
+        partition_dict.fromkeys(range(part_sum))
 
-    for module_num, module in enumerate(result):
-        partition_dict[module_num].update(module)
+        for module_num, module in enumerate(result):
+            partition_dict[module_num].update(module)
 
     return partition_dict
 
