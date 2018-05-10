@@ -9,5 +9,3 @@ if __name__ == '__main__':
 
     print(settings.as_dict())
     print(settings.UPDATE_INTERVAL)
-    from algorithm.search.greedy import test
-    test()

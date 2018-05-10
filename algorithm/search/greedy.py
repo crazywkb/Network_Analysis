@@ -3,10 +3,10 @@ import sys
 import networkx as nx
 
 from algorithm.community.detection import louvain
-from utils.counter import count_resistance
+from utils.counter import count_security_index
 from utils.decoration import timer
 from utils.graph_IO import read_gml
-from utils.counter import count_position_entropy
+from algorithm.similarity.similarity import count_Jaccard_index
 
 
 class Greedy(object):
@@ -16,7 +16,7 @@ class Greedy(object):
         self.func_args = func_args
         self.available_edges = None
 
-    @timer(switch=True)
+    @timer(switch=False)
     def get_available_edges(self, modules):
         """
         get available edges which can be used in anonymize() function
@@ -33,12 +33,12 @@ class Greedy(object):
         print("You get %d edges available." % (len(self.available_edges)))
 
     @timer(switch=True)
-    def anonymize(self, sum_of_edge=None, added_edges=None, interval=1):
+    def anonymize(self, sum_of_edge=None, added_edges=None):
         assert isinstance(sum_of_edge, int) or isinstance(added_edges, list)
-        modules = self.func(self.graph, **self.func_args)
-        self.get_available_edges(modules)
-        resistance = count_resistance(self.graph, modules)
-        print("Before anonymizing, the resistance of graph: %f" % resistance)
+        pre_modules = self.func(self.graph, **self.func_args)
+        self.get_available_edges(pre_modules)
+        previous_security_index = count_security_index(self.graph, pre_modules)
+        print("Before anonymizing, the security index of this graph is: %f" % previous_security_index)
 
         if not sum_of_edge:
             self.graph.add_edges(added_edges)
@@ -46,14 +46,14 @@ class Greedy(object):
 
             while sum_of_edge:  # adding sum_of_edge edges to make the graph anonymized
                 add_edge = None
-                min_resistance = sys.maxsize
+                min_security_index = sys.maxsize
 
                 for edge in self.available_edges:
                     self.graph.add_edge(*edge)
-                    resistance = count_resistance(self.graph, modules)
+                    security_index = count_security_index(self.graph, pre_modules)
 
-                    if resistance < min_resistance:
-                        min_resistance = resistance
+                    if security_index < min_security_index:
+                        min_security_index = security_index
                         add_edge = edge
 
                     self.graph.remove_edge(*edge)
@@ -61,19 +61,18 @@ class Greedy(object):
                 self.available_edges.remove(add_edge)
                 self.graph.add_edge(*add_edge)
 
-                print(min_resistance)
-
                 sum_of_edge -= 1
+                print(min_security_index)
 
-        modules = self.func(self.graph, **self.func_args)
-        min_resistance = count_resistance(self.graph, modules)
-        print("After anonymization, the resistance of graph is: %f" % min_resistance)
+        fin_modules = self.func(self.graph, **self.func_args)
+        finally_security_index = count_security_index(self.graph, fin_modules)
+        print("After anonymizing, the security index of this graph is: %f" % finally_security_index)
+        print("After anonymizing, the similarity of this two modules is: %f" % count_Jaccard_index(fin_modules,
+                                                                                                   pre_modules))
 
 
 if __name__ == '__main__':
-    from algorithm.community.detection import louvain, fast_newman
+    from algorithm.community.detection import fast_newman
     temp_graph = read_gml("../../samples/dolphins.gml")
-    greedy = Greedy(temp_graph)
-    temp_modules = fast_newman(temp_graph, 11)
-
-    greedy.anonymize(40, interval=1)
+    greedy = Greedy(temp_graph, func=fast_newman, func_args={"part_sum": 11})
+    greedy.anonymize(20)
