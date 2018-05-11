@@ -3,10 +3,9 @@ import sys
 import networkx as nx
 
 from algorithm.community.detection import louvain
+from algorithm.similarity.similarity import count_Jaccard_index
 from utils.counter import count_security_index
 from utils.decoration import timer
-from utils.graph_IO import read_gml
-from algorithm.similarity.similarity import count_Jaccard_index
 
 
 class Greedy(object):
@@ -67,12 +66,10 @@ class Greedy(object):
         fin_modules = self.func(self.graph, **self.func_args)
         finally_security_index = count_security_index(self.graph, fin_modules)
         print("After anonymizing, the security index of this graph is: %f" % finally_security_index)
-        print("After anonymizing, the similarity of this two modules is: %f" % count_Jaccard_index(fin_modules,
-                                                                                                   pre_modules))
+        print("After anonymizing, the moduels' similarity is: %f" % count_Jaccard_index(fin_modules, pre_modules))
 
-
-if __name__ == '__main__':
-    from algorithm.community.detection import fast_newman
-    temp_graph = read_gml("../../samples/dolphins.gml")
-    greedy = Greedy(temp_graph, func=fast_newman, func_args={"part_sum": 11})
-    greedy.anonymize(20)
+# if __name__ == '__main__':
+#     from algorithm.community.detection import fast_newman
+#     temp_graph = read_gml("../../samples/dolphins.gml")
+#     greedy = Greedy(temp_graph, func=fast_newman, func_args={"part_sum": 11})
+#     greedy.anonymize(20)
