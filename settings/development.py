@@ -38,7 +38,7 @@ LOGGING_CONFIG = {
         },
         'file': {
             'level': 'INFO',
-            'class': 'cloghandler.ConcurrentRotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
             'maxBytes': 1024 * 1024 * 10,
             'backupCount': 50,
             'delay': True,
@@ -47,7 +47,7 @@ LOGGING_CONFIG = {
         }
     },
     'loggers': {
-        '': {
+        'test': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
