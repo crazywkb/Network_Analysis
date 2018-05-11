@@ -2,7 +2,7 @@ from math import log
 
 from utils.decoration import watcher
 
-switch = True
+switch = False
 
 
 @watcher(switch)
@@ -75,13 +75,17 @@ def count_multiple_dimension(graph, modules_dict):
 
 @watcher(switch)
 def count_normalize_structure_entropy(graph, modules):
-    structure_entropy = count_structure_entropy(graph, modules)
-    position_entropy = count_position_entropy(graph)
-    resistance = position_entropy - structure_entropy
-
-    security_index = resistance / position_entropy
+    security_index = count_security_index(graph, modules)
     normalized_structure_entropy = 1 - security_index
     return normalized_structure_entropy
+
+
+@watcher(switch)
+def count_security_index(graph, modules):
+    position_entropy = count_position_entropy(graph)
+    resistance = count_resistance(graph, modules)
+    security_index = resistance / position_entropy
+    return security_index
 
 
 @watcher(switch)

@@ -1,4 +1,15 @@
-decorator==4.2.1
+ConcurrentLogHandler==0.9.1
+cycler==0.10.0
+decorator==4.3.0
+kiwisolver==1.0.1
+matplotlib==2.2.2
 networkx==2.1
+numpy==1.14.3
+pyparsing==2.2.0
+pypiwin32==223
+python-dateutil==2.7.2
 python-louvain==0.10
+pytz==2018.4
+pywin32==223
 simple-settings==0.13.0
+six==1.11.0
