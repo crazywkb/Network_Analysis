@@ -68,8 +68,11 @@ class Greedy(object):
         print("After anonymizing, the security index of this graph is: %f" % finally_security_index)
         print("After anonymizing, the moduels' similarity is: %f" % count_Jaccard_index(fin_modules, pre_modules))
 
-# if __name__ == '__main__':
-#     from algorithm.community.detection import fast_newman
-#     temp_graph = read_gml("../../samples/dolphins.gml")
-#     greedy = Greedy(temp_graph, func=fast_newman, func_args={"part_sum": 11})
-#     greedy.anonymize(20)
+
+if __name__ == '__main__':
+    from algorithm.community.detection import fast_newman
+    from utils.graph_IO import read_gml
+
+    temp_graph = read_gml("../../samples/dolphins.gml")
+    greedy = Greedy(temp_graph, func=fast_newman, func_args={"part_sum": 9})
+    greedy.anonymize(50)
