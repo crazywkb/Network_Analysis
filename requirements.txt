@@ -1,3 +1,4 @@
+scipy
 concurrent-log-handler==0.9.9
 cycler==0.10.0
 decorator==4.3.0
