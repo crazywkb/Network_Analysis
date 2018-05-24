@@ -179,18 +179,27 @@ class GA(object):
 
     @timer(settings.SWITCH)
     def disaster(self):
+        # count = 0
+        # try:
+        #     while True:
+        #         self.populations.remove(self.local_best_chromosome)
+        #         count += 1
+        # except ValueError:
+        #     self.__get_random_chromosome(self.population_size - len(self.populations))
+        #     log.info("Disaster: remove %4d chromosomes." % count)
+        #     self.count_fitness()
         count = 0
-        try:
-            while True:
-                self.populations.remove(self.local_best_chromosome)
+        for chromosome in self.populations:
+            if chromosome != self.local_best_chromosome:
+                self.populations.remove(chromosome)
                 count += 1
-        except ValueError:
-            self.__get_random_chromosome(self.population_size - len(self.populations))
-            log.info("Disaster: remove %4d chromosomes." % count)
-            self.count_fitness()
+        self.__get_random_chromosome(self.population_size - len(self.populations))
+        log.info("Disaster: remove %4d chromosomes." % count)
+        self.count_fitness()
+
 
     def save(self):
-        nx.write_gml(self.graph, 'C://users//34281//desktop/test.gml')
+        nx.write_gml(self.graph, 'test.gml')
 
     @timer(settings.SWITCH)
     def run(self):
@@ -219,7 +228,7 @@ class GA(object):
             self.generation_num -= 1
 
         self.graph.add_edges_from(self.global_best_chromosome)
-        self.fin_modules = self.func(self.graph)
+        self.fin_modules = self.func(self.graph, **self.func_args)
         # print(count_Jaccard_index(self.pre_modules, self.fin_modules))
         log.info("Jaccard_index: %f" % count_Jaccard_index(self.pre_modules, self.fin_modules))
         self.save()
