@@ -12,12 +12,13 @@ from utils.counter import count_security_index
 from utils.decoration import timer
 from utils.graph_IO import read
 
-log = logging.getLogger(settings.LOGGER_NAME)
+
+# log = logging.getLogger(settings.LOGGER_NAME)
 
 
 class GA(object):
     def __init__(self, **kwargs):
-        log.info("GA Start.")
+        #log.info("GA Start.")
         self.graph = read(kwargs['graph'])
         self.population_size = kwargs['population_size']
         self.chromosome_size = kwargs['chromosome_size']
@@ -43,8 +44,24 @@ class GA(object):
         self.global_best_security_index = sys.maxsize
         self.global_best_chromosome = None
 
+        self.result_dict = dict()
+        self.result_dict['graph'] = kwargs['graph']
+        self.result_dict['func'] = kwargs['func'].__name__
+        self.result_dict['func_args'] = kwargs['func_args']
+        self.result_dict['edge_sum'] = kwargs['chromosome_size']
+        self.result_dict['populations_size'] = kwargs['population_size']
+        self.result_dict['mate_probability'] = kwargs['mate_probability']
+        self.result_dict['mutate_probablity'] = kwargs['mutate_probability']
+        self.result_dict['generation_num'] = kwargs['generation_num']
+        self.result_dict['added_edges'] = list()
+        self.result_dict['security_index'] = None
+        self.result_dict['Jaccard_index'] = None
+        self.result_dict['pre_modules'] = None
+        self.result_dict['fin_modules'] = None
+
     def __set_pre_modules(self):
         self.pre_modules = self.func(self.graph, **self.func_args)
+        self.result_dict['pre_modules'] = self.pre_modules.copy()
 
     def __get_available_edges(self):
         self.__set_pre_modules()
@@ -56,7 +73,7 @@ class GA(object):
 
         module_cross_edges = nx.complete_graph(self.graph.nodes).edges - inside_edges
         self.available_edges = list(module_cross_edges - self.graph.edges)
-        log.info("Got %d edges available." % (len(self.available_edges)))
+        #log.info("Got %d edges available." % (len(self.available_edges)))
 
     def __get_random_chromosome(self, num):
         for i in range(num):
@@ -135,17 +152,6 @@ class GA(object):
         while len(new_populations) < self.population_size:
             new_populations.extend(self.sub_select())
 
-        # pool = multiprocessing.Pool(processes=10)
-        # result = []
-        # for i in range(int(self.population_size) // 2):
-        #     result.append(pool.apply_async(self.sub_select))
-        #
-        # pool.close()
-        # pool.join()
-        #
-        # for re in result:
-        #     new_populations.extend(re.get())
-
         self.populations = new_populations
 
     @timer(settings.SWITCH)
@@ -179,24 +185,10 @@ class GA(object):
 
     @timer(settings.SWITCH)
     def disaster(self):
-        # count = 0
-        # try:
-        #     while True:
-        #         self.populations.remove(self.local_best_chromosome)
-        #         count += 1
-        # except ValueError:
-        #     self.__get_random_chromosome(self.population_size - len(self.populations))
-        #     log.info("Disaster: remove %4d chromosomes." % count)
-        #     self.count_fitness()
-        count = 0
-        for chromosome in self.populations:
-            if chromosome != self.local_best_chromosome:
-                self.populations.remove(chromosome)
-                count += 1
-            else:
-                print("same")
+        count = self.populations.count(self.local_best_chromosome)
+        self.populations = []
         self.__get_random_chromosome(self.population_size - len(self.populations))
-        log.info("Disaster: remove %4d chromosomes." % count)
+        #log.info("Disaster: remove %4d chromosomes." % count)
         self.count_fitness()
 
 
@@ -211,8 +203,6 @@ class GA(object):
         generation = 0
         while self.generation_num:
             self.count_fitness()
-            # print(self.global_best_security_index)
-
             if self.global_best_security_index == previous_best:
                 n += 1
             else:
@@ -224,22 +214,20 @@ class GA(object):
                 n = 0
                 self.count_fitness()
             generation += 1
-            log.info("Generation %4d, local_min_security_index: %.16f, global_min_security_index: %.16f." % (
-                generation, self.local_best_security_index, self.global_best_security_index))
+            # log.info("Generation %4d, local_min_security_index: %.16f, global_min_security_index: %.16f." % (
+            #    generation, self.local_best_security_index, self.global_best_security_index))
             self.select()
             self.generation_num -= 1
 
         self.graph.add_edges_from(self.global_best_chromosome)
         self.fin_modules = self.func(self.graph, **self.func_args)
         # print(count_Jaccard_index(self.pre_modules, self.fin_modules))
-        log.info("Jaccard_index: %f" % count_Jaccard_index(self.pre_modules, self.fin_modules))
-        self.save()
-        log.info("GA Ended.")
+        jaccard_index = count_Jaccard_index(self.pre_modules, self.fin_modules)
+        # log.info("Jaccard_index: %f" % jaccard_index)
+        ##log.info("GA Ended.")
 
-# if __name__ == '__main__':
-#     ga = GA(graph='../../samples/football.gml', func_args={'randomize': True}, func=louvain, population_size=1000,
-#             chromosome_size=200, mate_probability=0.5, mutate_probability=0.05, generation_num=100)
-#     ga.run()
-#
-#     # temp_graph = read('../../samples/dolphins.gml')
-#     # print(louvain(temp_graph))
+        self.result_dict['security_index'] = self.global_best_security_index
+        self.result_dict['Jaccard_index'] = jaccard_index
+        self.result_dict['added_edges'] = self.global_best_chromosome
+        self.result_dict['fin_modules'] = self.fin_modules.copy()
+        print("ga done")
