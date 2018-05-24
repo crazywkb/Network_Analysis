@@ -193,6 +193,8 @@ class GA(object):
             if chromosome != self.local_best_chromosome:
                 self.populations.remove(chromosome)
                 count += 1
+            else:
+                print("same")
         self.__get_random_chromosome(self.population_size - len(self.populations))
         log.info("Disaster: remove %4d chromosomes." % count)
         self.count_fitness()
