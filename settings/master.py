@@ -6,12 +6,12 @@ SWITCH = False
 
 GA_SETTINGS = {
     'graph': 'samples/dolphins.gml',
-    'func': louvain,
-    'func_args': {'randomize': True},
-    'population_size': 100,
+    'func': fast_newman,
+    'func_args': {'part_sum': 5},
+    'population_size': 200,
     'chromosome_size': 30,
-    'mate_probability': 0.5,
-    'mutate_probability': 0.05,
+    'mate_probability': 0.7,
+    'mutate_probability': 0.02,
     'generation_num': 100,
     'disaster_interval': 20
 }
