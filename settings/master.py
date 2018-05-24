@@ -2,6 +2,12 @@ from algorithm.community.detection import louvain, fast_newman
 
 GRAPH_PATH = "samples/karate.gml"
 
+GRAPHS = [('samples/karate.gml', 10), ('samples/dolphins.gml', 10)]
+
+FUNCS = [(louvain, dict()), (fast_newman, {'part_sum': 5})]
+
+PART_SUM = 5
+
 SWITCH = False
 
 GA_SETTINGS = {
@@ -19,9 +25,9 @@ GA_SETTINGS = {
 GREEDY_SETTINGS = {
     'graph': 'samples/dolphins.gml',
     'added_edges': None,
-    'sum_of_edge': 30,
+    'sum_of_edge': 10,
     'func': louvain,
-    'func_args': {'randomize': True},
+    'func_args': {},
 }
 
 LOGGER_NAME = 'test'
