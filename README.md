@@ -4,5 +4,5 @@ This is a graduation project. Designing an algorithm to make the social network 
 
 
 ## Todo:
-1. add logging module in order to write down the result of each running.
+1. ga search
 2. make the program into multiprocessing

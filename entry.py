@@ -1,21 +1,19 @@
 # coding=utf-8
-import os
-from simple_settings import settings
+import datetime
 import logging.config
+import os
 
-
-def initial():
-    os.environ['SIMPLE_SETTINGS'] = 'settings.' + os.sys.argv[1]
-    settings.setup()
-    logging.config.dictConfig(settings.LOGGING_CONFIG)
-
-
-def get_logger(name):
-    assert isinstance(name, str)
-    return logging.getLogger(name)
-
+from simple_settings import settings
 
 if __name__ == '__main__':
-    initial()
-    logger = get_logger("test")
-    logger.info("This is not a test.")
+    os.environ['SIMPLE_SETTINGS'] = 'settings.master'
+    settings.setup()
+    from algorithm.search.ga import GA
+    from algorithm.search.greedy import Greedy
+
+    logging.config.dictConfig(settings.LOGGING_CONFIG)
+    greedy = Greedy(**settings.GREEDY_SETTINGS)
+    greedy.anonymize()
+
+    # ga = GA(**settings.GA_SETTINGS)
+    # ga.run()
