@@ -2,7 +2,7 @@ from algorithm.community.detection import louvain, fast_newman
 
 GRAPH_PATH = "samples/karate.gml"
 
-GRAPHS = [('samples/karate.gml', 10), ('samples/dolphins.gml', 10)]
+GRAPHS = [('samples/karate.gml', 100), ('samples/dolphins.gml', 500)]
 
 FUNCS = [(louvain, dict()), (fast_newman, {'part_sum': 5})]
 
