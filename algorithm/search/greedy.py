@@ -93,7 +93,7 @@ class Greedy(object):
 
         fin_modules = self.func(self.graph, **self.func_args)
         self.result_dict['fin_modules'] = fin_modules.copy()
-        log.info("Greedy %s %s %s %s" % (
+        log.info("Greedy %25s %15s %4d   %s" % (
         self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
         self.result_dict['Jaccard_index']))
         return self.result_dict

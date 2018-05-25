@@ -223,7 +223,8 @@ class GA(object):
         self.result_dict['added_edges'] = self.global_best_chromosome
         self.result_dict['fin_modules'] = self.fin_modules.copy()
 
-        log.info("GA %s %s %s %s" % (self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
-                                     self.result_dict['Jaccard_index']))
+        log.info("GA     %25s %15s %4d   %s" % (
+        self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
+        self.result_dict['Jaccard_index']))
 
         return self.result_dict
