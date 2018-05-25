@@ -54,7 +54,6 @@ def count_Jaccard_index(modules_a, modules_b):
     r = count_common_parts_num(modules_a, modules_b)
     u_v_2r = count_combinations(modules=modules_a) + count_combinations(modules=modules_b)
 
-    print(r, u_v_2r)
     return r / (u_v_2r - r)
 
 

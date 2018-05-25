@@ -5,12 +5,11 @@ import logging.config
 from algorithm.community.detection import louvain
 from algorithm.similarity.similarity import count_Jaccard_index
 from utils.counter import count_security_index
-from utils.decoration import timer
 from simple_settings import settings
 from utils.graph_IO import read
 
-
-# log = logging.getLogger(settings.LOGGER_NAME)
+logging.config.dictConfig(settings.LOGGING_CONFIG)
+log = logging.getLogger('test')
 
 class Greedy(object):
     def __init__(self, graph, sum_of_edge=None, added_edges=None, func=louvain, func_args=dict()):
@@ -33,7 +32,6 @@ class Greedy(object):
         self.result_dict['pre_modules'] = None
         self.result_dict['fin_modules'] = None
 
-    @timer(switch=settings.SWITCH)
     def get_available_edges(self, modules):
         """
         get available edges which can be used in anonymize() function
@@ -49,7 +47,6 @@ class Greedy(object):
         self.available_edges = module_cross_edges - self.graph.edges
         #log.info("Got %d edges available." % (len(self.available_edges)))
 
-    @timer(switch=settings.SWITCH)
     def anonymize(self):
 
         sum_of_edge = self.sum_of_edge
@@ -96,7 +93,10 @@ class Greedy(object):
 
         fin_modules = self.func(self.graph, **self.func_args)
         self.result_dict['fin_modules'] = fin_modules.copy()
-        print('greedy done')
+        log.info("Greedy %25s %15s %4d   %s" % (
+        self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
+        self.result_dict['Jaccard_index']))
+        return self.result_dict
 
         # finally_security_index = count_security_index(self.graph, fin_modules)
         #log.info("Jaccard_index: %f" % count_Jaccard_index(fin_modules, pre_modules))

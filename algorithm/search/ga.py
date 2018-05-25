@@ -9,11 +9,10 @@ from simple_settings import settings
 
 from algorithm.similarity.similarity import count_Jaccard_index
 from utils.counter import count_security_index
-from utils.decoration import timer
 from utils.graph_IO import read
 
-
-# log = logging.getLogger(settings.LOGGER_NAME)
+logging.config.dictConfig(settings.LOGGING_CONFIG)
+log = logging.getLogger('test')
 
 
 class GA(object):
@@ -89,7 +88,6 @@ class GA(object):
 
             self.populations.append(chromosome)
 
-    @timer(settings.SWITCH)
     def generate_population(self):
         self.__get_available_edges()
 
@@ -113,7 +111,6 @@ class GA(object):
             self.global_best_chromosome = self.local_best_chromosome
             self.global_best_security_index = self.local_best_security_index
 
-    @timer(settings.SWITCH)
     def count_fitness(self):
         self.__count_value()
         self.fitness_list = list()
@@ -145,7 +142,6 @@ class GA(object):
         self.__mutate(b_chromosome)
         return [a_chromosome, b_chromosome]
 
-    @timer(settings.SWITCH)
     def select(self):
         new_populations = list()
 
@@ -154,7 +150,6 @@ class GA(object):
 
         self.populations = new_populations
 
-    @timer(settings.SWITCH)
     def __mate(self, a_chromosome, b_chromosome):
         if random() < self.mate_probability:
             mate_size = randint(0, self.chromosome_size)
@@ -173,7 +168,6 @@ class GA(object):
                 a_chromosome.append(b_a.pop(randint(0, len(b_a) - 1)))
                 b_chromosome.append(a_b.pop(randint(0, len(a_b) - 1)))
 
-    @timer(settings.SWITCH)
     def __mutate(self, chromosome):
         for index in range(self.chromosome_size):
             if random() < self.mutate_probability:
@@ -183,7 +177,6 @@ class GA(object):
                         chromosome[index] = gene
                         break
 
-    @timer(settings.SWITCH)
     def disaster(self):
         count = self.populations.count(self.local_best_chromosome)
         self.populations = []
@@ -195,7 +188,6 @@ class GA(object):
     def save(self):
         nx.write_gml(self.graph, 'test.gml')
 
-    @timer(settings.SWITCH)
     def run(self):
         self.generate_population()
         n = 0
@@ -230,4 +222,9 @@ class GA(object):
         self.result_dict['Jaccard_index'] = jaccard_index
         self.result_dict['added_edges'] = self.global_best_chromosome
         self.result_dict['fin_modules'] = self.fin_modules.copy()
-        print("ga done")
+
+        log.info("GA     %25s %15s %4d   %s" % (
+        self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
+        self.result_dict['Jaccard_index']))
+
+        return self.result_dict
