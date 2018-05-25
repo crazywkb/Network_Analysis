@@ -34,8 +34,8 @@ if __name__ == '__main__':
                 (('greedy', graph, sum_of_edge, func.__name__, func_args), pool.apply_async(greedy.anonymize)))
 
             for edges_sum in range(10, sum_of_edge + 1, 10):
-                ga = GA(graph=graph, population_size=10, chromosome_size=edges_sum, func=func, func_args=func_args,
-                        mate_probability=0.8, mutate_probability=0.02, disaster_interval=20, generation_num=10)
+                ga = GA(graph=graph, population_size=300, chromosome_size=edges_sum, func=func, func_args=func_args,
+                        mate_probability=0.8, mutate_probability=0.02, disaster_interval=20, generation_num=200)
                 processes.append((('ga', graph, edges_sum, func.__name__, func_args), pool.apply_async(ga.run)))
 
     pool.close()
