@@ -223,7 +223,9 @@ class GA(object):
         self.result_dict['Jaccard_index'] = jaccard_index
         self.result_dict['added_edges'] = self.global_best_chromosome
         self.result_dict['fin_modules'] = self.fin_modules.copy()
-        import json
-        log.info(json.dumps(self.result_dict))
+
+        log.info("GA||%s||%s||%d||%f||%f" % (
+        self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
+        self.result_dict['security_index'], self.result_dict['Jaccard_index']))
 
         return self.result_dict
