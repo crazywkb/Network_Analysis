@@ -22,6 +22,7 @@ class Greedy(object):
         self.added_edges = added_edges
         self.result_dict = dict()
 
+        self.result_dict['search'] = 'GREEDY    '
         self.result_dict['graph'] = graph
         self.result_dict['func'] = func.__name__
         self.result_dict['func_args'] = func_args
@@ -93,9 +94,8 @@ class Greedy(object):
 
         fin_modules = self.func(self.graph, **self.func_args)
         self.result_dict['fin_modules'] = fin_modules.copy()
-        log.info("Greedy %25s %15s %4d   %s" % (
-        self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
-        self.result_dict['Jaccard_index']))
+        import json
+        log.info(json.dumps(self.result_dict))
         return self.result_dict
 
         # finally_security_index = count_security_index(self.graph, fin_modules)

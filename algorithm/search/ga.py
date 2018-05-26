@@ -44,6 +44,7 @@ class GA(object):
         self.global_best_chromosome = None
 
         self.result_dict = dict()
+        self.result_dict['search'] = 'GA'
         self.result_dict['graph'] = kwargs['graph']
         self.result_dict['func'] = kwargs['func'].__name__
         self.result_dict['func_args'] = kwargs['func_args']
@@ -222,9 +223,7 @@ class GA(object):
         self.result_dict['Jaccard_index'] = jaccard_index
         self.result_dict['added_edges'] = self.global_best_chromosome
         self.result_dict['fin_modules'] = self.fin_modules.copy()
-
-        log.info("GA     %25s %15s %4d   %s" % (
-        self.result_dict['graph'], self.result_dict['func'], self.result_dict['edge_sum'],
-        self.result_dict['Jaccard_index']))
+        import json
+        log.info(json.dumps(self.result_dict))
 
         return self.result_dict
