@@ -9,6 +9,9 @@ from collections import defaultdict
 from simple_settings import settings
 
 if __name__ == '__main__':
+    pid = os.fork()
+    if pid > 0:
+        sys.exit(0)
     os.environ['SIMPLE_SETTINGS'] = 'settings.master'
     settings.setup()
     from algorithm.search.ga import GA
@@ -35,7 +38,7 @@ if __name__ == '__main__':
                 (('greedy', graph, sum_of_edge, func.__name__, func_args), pool.apply_async(greedy.anonymize)))
 
             for edges_sum in range(1, sum_of_edge + 1, 1):
-                ga = GA(graph=graph, population_size=300, chromosome_size=edges_sum, func=func, func_args=func_args,
+                ga = GA(graph=graph, population_size=400, chromosome_size=edges_sum, func=func, func_args=func_args,
                         mate_probability=0.8, mutate_probability=0.02, disaster_interval=20, generation_num=200)
                 processes.append((('ga', graph, edges_sum, func.__name__, func_args), pool.apply_async(ga.run)))
 
